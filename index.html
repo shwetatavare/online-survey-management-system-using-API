@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Online Survey Management System</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f2f5f9;
+            color: #222;
+        }
+
+        header {
+            background: #263cdb;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin-bottom: 10px;
+        }
+
+        nav {
+            background: #1727a5;
+            padding: 12px;
+            text-align: center;
+        }
+
+        nav button {
+            background: white;
+            color: #1727a5;
+            border: none;
+            padding: 10px 18px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        nav button:hover {
+            background: #ddd;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            margin: 30px auto;
+        }
+
+        .section {
+            background: white;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: #263cdb;
+            margin-bottom: 20px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 12px 20px;
+            background: #263cdb;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1727a5;
+        }
+
+        .question {
+            background: #f7f8ff;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 7px;
+        }
+
+        .question label {
+            display: block;
+            margin: 8px 0;
+        }
+
+        .survey-card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 7px;
+        }
+
+        .success {
+            color: green;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        .error {
+            color: red;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        .stats {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-box {
+            flex: 1;
+            min-width: 200px;
+            background: #eef0ff;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px;
+        }
+
+        .stat-box h3 {
+            font-size: 30px;
+            color: #263cdb;
+        }
+
+        footer {
+            background: #1727a5;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 30px;
+        }
+
+        @media(max-width:600px) {
+            .container {
+                width: 95%;
+            }
+
+            nav button {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>Online Survey Management System</h1>
+    <p>Survey Management using HTML, CSS, JavaScript & API</p>
+</header>
+
+<nav>
+    <button onclick="showSection('dashboard')">Dashboard</button>
+    <button onclick="showSection('create')">Create Survey</button>
+    <button onclick="showSection('surveys')">Take Survey</button>
+    <button onclick="showSection('results')">Results</button>
+</nav>
+
+<div class="container">
+
+    <!-- Dashboard -->
+    <div id="dashboard" class="section">
+        <h2>Dashboard</h2>
+
+        <div class="stats">
+
+            <div class="stat-box">
+                <h3 id="surveyCount">0</h3>
+                <p>Total Surveys</p>
+            </div>
+
+            <div class="stat-box">
+                <h3 id="responseCount">0</h3>
+                <p>Total Responses</p>
+            </div>
+
+            <div class="stat-box">
+                <h3>API</h3>
+                <p>Connected</p>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- Create Survey -->
+    <div id="create" class="section" style="display:none;">
+
+        <h2>Create New Survey</h2>
+
+        <label>Survey Title</label>
+        <input type="text" id="surveyTitle"
+               placeholder="Enter survey title">
+
+        <label>Question</label>
+        <input type="text" id="questionText"
+               placeholder="Enter question">
+
+        <label>Question Type</label>
+
+        <select id="questionType">
+            <option value="text">Text Answer</option>
+            <option value="radio">Multiple Choice</option>
+        </select>
+
+        <div id="optionsBox" style="display:none;">
+
+            <label>Options</label>
+
+            <input type="text" id="option1"
+                   placeholder="Option 1">
+
+            <input type="text" id="option2"
+                   placeholder="Option 2">
+
+            <input type="text" id="option3"
+                   placeholder="Option 3">
+
+            <input type="text" id="option4"
+                   placeholder="Option 4">
+
+        </div>
+
+        <button onclick="addQuestion()">
+            Add Question
+        </button>
+
+        <div id="questionList"></div>
+
+        <br>
+
+        <button onclick="createSurvey()">
+            Create Survey
+        </button>
+
+        <p id="createMessage"></p>
+
+    </div>
+
+
+    <!-- Surveys -->
+    <div id="surveys" class="section" style="display:none;">
+
+        <h2>Available Surveys</h2>
+
+        <div id="surveyList">
+            Loading surveys...
+        </div>
+
+    </div>
+
+
+    <!-- Survey Form -->
+    <div id="surveyForm" class="section" style="display:none;">
+
+        <h2 id="formTitle"></h2>
+
+        <form id="responseForm">
+
+            <div id="formQuestions"></div>
+
+            <button type="submit">
+                Submit Response
+            </button>
+
+        </form>
+
+        <p id="responseMessage"></p>
+
+    </div>
+
+
+    <!-- Results -->
+    <div id="results" class="section" style="display:none;">
+
+        <h2>Survey Results</h2>
+
+        <div id="resultData">
+            No responses available.
+        </div>
+
+    </div>
+
+</div>
+
+
+<footer>
+    <p>© 2026 Online Survey Management System</p>
+    <p>HTML | CSS | JavaScript | REST API</p>
+</footer>
+
+
+<script>
+
+    // -----------------------------
+    // Global Variables
+    // -----------------------------
+
+    let surveys = [];
+    let currentQuestions = [];
+    let responses = 0;
+
+    const API_URL = "https://jsonplaceholder.typicode.com/posts";
+
+
+    // -----------------------------
+    // Navigation
+    // -----------------------------
+
+    function showSection(sectionId) {
+
+        const sections = [
+            "dashboard",
+            "create",
+            "surveys",
+            "results",
+            "surveyForm"
+        ];
+
+        sections.forEach(function(id) {
+            document.getElementById(id).style.display = "none";
+        });
+
+        document.getElementById(sectionId).style.display = "block";
+
+        if(sectionId === "surveys") {
+            displaySurveys();
+        }
+
+        if(sectionId === "dashboard") {
+            updateDashboard();
+        }
+
+        if(sectionId === "results") {
+            displayResults();
+        }
+    }
+
+
+    // -----------------------------
+    // Question Type
+    // -----------------------------
+
+    document.getElementById("questionType")
+        .addEventListener("change", function() {
+
+            if(this.value === "radio") {
+                document.getElementById("optionsBox")
+                    .style.display = "block";
+            }
+            else {
+                document.getElementById("optionsBox")
+                    .style.display = "none";
+            }
+
+        });
+
+
+    // -----------------------------
+    // Add Question
+    // -----------------------------
+
+    function addQuestion() {
+
+        let question =
+            document.getElementById("questionText").value;
+
+        let type =
+            document.getElementById("questionType").value;
+
+        if(question.trim() === "") {
+
+            alert("Please enter question");
+
+            return;
+        }
+
+        let questionObject = {
+            question: question,
+            type: type,
+            options: []
+        };
+
+
+        if(type === "radio") {
+
+            for(let i = 1; i <= 4; i++) {
+
+                let option =
+                    document.getElementById("option" + i).value;
+
+                if(option.trim() !== "") {
+
+                    questionObject.options.push(option);
+                }
+            }
+
+            if(questionObject.options.length < 2) {
+
+                alert("Enter at least 2 options");
+
+                return;
+            }
+        }
+
+
+        currentQuestions.push(questionObject);
+
+        displayQuestions();
+
+
+        document.getElementById("questionText").value = "";
+
+        for(let i = 1; i <= 4; i++) {
+
+            document.getElementById("option" + i).value = "";
+        }
+    }
+
+
+    // -----------------------------
+    // Display Questions
+    // -----------------------------
+
+    function displayQuestions() {
+
+        let list =
+            document.getElementById("questionList");
+
+        list.innerHTML = "";
+
+        currentQuestions.forEach(function(q, index) {
+
+            let div =
+                document.createElement("div");
+
+            div.className = "question";
+
+            div.innerHTML =
+                "<b>Q" + (index + 1) + ":</b> "
+                + q.question
+                + "<br><small>Type: "
+                + q.type
+                + "</small>";
+
+            list.appendChild(div);
+
+        });
+    }
+
+
+    // -----------------------------
+    // Create Survey
+    // -----------------------------
+
+    async function createSurvey() {
+
+        let title =
+            document.getElementById("surveyTitle").value;
+
+        if(title.trim() === "") {
+
+            alert("Enter survey title");
+
+            return;
+        }
+
+        if(currentQuestions.length === 0) {
+
+            alert("Add at least one question");
+
+            return;
+        }
+
+
+        let survey = {
+
+            id: Date.now(),
+
+            title: title,
+
+            questions: currentQuestions
+
+        };
+
+
+        try {
+
+            const response = await fetch(API_URL, {
+
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify(survey)
+
+            });
+
+
+            const data = await response.json();
+
+            console.log("API Response:", data);
+
+
+            surveys.push(survey);
+
+            document.getElementById("createMessage")
+                .className = "success";
+
+            document.getElementById("createMessage")
+                .innerHTML =
+                "Survey created successfully!";
+
+
+            document.getElementById("surveyTitle").value = "";
+
+            currentQuestions = [];
+
+            displayQuestions();
+
+            updateDashboard();
+
+        }
+
+        catch(error) {
+
+            document.getElementById("createMessage")
+                .className = "error";
+
+            document.getElementById("createMessage")
+                .innerHTML =
+                "API Error!";
+
+            console.log(error);
+        }
+    }
+
+
+    // -----------------------------
+    // Display Surveys
+    // -----------------------------
+
+    function displaySurveys() {
+
+        let list =
+            document.getElementById("surveyList");
+
+        list.innerHTML = "";
+
+
+        if(surveys.length === 0) {
+
+            list.innerHTML =
+                "<p>No surveys created yet.</p>";
+
+            return;
+        }
+
+
+        surveys.forEach(function(survey) {
+
+            let card =
+                document.createElement("div");
+
+            card.className = "survey-card";
+
+
+            card.innerHTML =
+
+                "<h3>"
+                + survey.title
+                + "</h3>"
+
+                + "<p>"
+                + survey.questions.length
+                + " Questions</p>"
+
+                + "<button onclick='takeSurvey("
+                + survey.id
+                + ")'>Take Survey</button>";
+
+
+            list.appendChild(card);
+
+        });
+    }
+
+
+    // -----------------------------
+    // Take Survey
+    // -----------------------------
+
+    function takeSurvey(id) {
+
+        let survey =
+            surveys.find(function(s) {
+
+                return s.id === id;
+
+            });
+
+
+        if(!survey) {
+
+            return;
+        }
+
+
+        document.getElementById("surveys")
+            .style.display = "none";
+
+        document.getElementById("surveyForm")
+            .style.display = "block";
+
+
+        document.getElementById("formTitle")
+            .innerText = survey.title;
+
+
+        let formQuestions =
+            document.getElementById("formQuestions");
+
+        formQuestions.innerHTML = "";
+
+
+        survey.questions.forEach(function(q, index) {
+
+            let div =
+                document.createElement("div");
+
+            div.className = "question";
+
+
+            let html =
+                "<p><b>Q"
+                + (index + 1)
+                + ". "
+                + q.question
+                + "</b></p>";
+
+
+            if(q.type === "text") {
+
+                html +=
+
+                    "<textarea name='q"
+                    + index
+                    + "' required></textarea>";
+
+            }
+
+
+            if(q.type === "radio") {
+
+                q.options.forEach(function(option) {
+
+                    html +=
+
+                        "<label>"
+
+                        + "<input type='radio' "
+                        + "name='q"
+                        + index
+                        + "' value='"
+                        + option
+                        + "' required> "
+
+                        + option
+
+                        + "</label>";
+
+                });
+
+            }
+
+
+            div.innerHTML = html;
+
+            formQuestions.appendChild(div);
+
+        });
+
+
+        document.getElementById("responseForm")
+            .onsubmit = function(event) {
+
+                event.preventDefault();
+
+                submitResponse(survey);
+
+            };
+
+    }
+
+
+    // -----------------------------
+    // Submit Response using API
+    // -----------------------------
+
+    async function submitResponse(survey) {
+
+        let form =
+            document.getElementById("responseForm");
+
+
+        let formData =
+            new FormData(form);
+
+
+        let answers = {};
+
+
+        survey.questions.forEach(function(q, index) {
+
+            answers[q.question] =
+                formData.get("q" + index);
+
+        });
+
+
+        let responseData = {
+
+            surveyId: survey.id,
+
+            surveyTitle: survey.title,
+
+            answers: answers
+
+        };
+
+
+        try {
+
+            const response = await fetch(API_URL, {
+
+                method: "POST",
+
+                headers: {
+
+                    "Content-Type":
+                    "application/json"
+
+                },
+
+                body:
+                JSON.stringify(responseData)
+
+            });
+
+
+            const data =
+                await response.json();
+
+
+            console.log("API Response:", data);
+
+
+            responses++;
+
+
+            document.getElementById("responseMessage")
+                .className = "success";
+
+            document.getElementById("responseMessage")
+                .innerText =
+                "Response submitted successfully!";
+
+
+            form.reset();
+
+            updateDashboard();
+
+        }
+
+        catch(error) {
+
+            document.getElementById("responseMessage")
+                .className = "error";
+
+            document.getElementById("responseMessage")
+                .innerText =
+                "Unable to submit response.";
+
+        }
+
+    }
+
+
+    // -----------------------------
+    // Dashboard
+    // -----------------------------
+
+    function updateDashboard() {
+
+        document.getElementById("surveyCount")
+            .innerText = surveys.length;
+
+        document.getElementById("responseCount")
+            .innerText = responses;
+
+    }
+
+
+    // -----------------------------
+    // Results
+    // -----------------------------
+
+    function displayResults() {
+
+        let result =
+            document.getElementById("resultData");
+
+
+        if(surveys.length === 0) {
+
+            result.innerHTML =
+                "No survey results available.";
+
+            return;
+        }
+
+
+        let html = "";
+
+
+        surveys.forEach(function(survey) {
+
+            html +=
+
+                "<div class='survey-card'>"
+
+                + "<h3>"
+                + survey.title
+                + "</h3>"
+
+                + "<p>Total Questions: "
+                + survey.questions.length
+                + "</p>"
+
+                + "<p>Total Responses: "
+                + responses
+                + "</p>"
+
+                + "</div>";
+
+        });
+
+
+        result.innerHTML = html;
+
+    }
+
+
+    // -----------------------------
+    // Initial Load
+    // -----------------------------
+
+    updateDashboard();
+
+</script>
+
+</body>
+</html>
